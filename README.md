@@ -37,10 +37,12 @@ dotnet test Orbshacker.sln
 dotnet run --project src/Orbshacker/Orbshacker.csproj
 ```
 
+Normal `dotnet build` and `dotnet run` outputs are framework-dependent and require the .NET 8 Windows Desktop Runtime. The application copies their `.dll`, `.deps.json`, and `.runtimeconfig.json` files beside each generated game executable. Release publishing instead produces one self-contained executable, so generated game copies need no supporting files or installed runtime.
+
 Create the same self-contained, single-file executable used by releases:
 
 ```powershell
-dotnet publish src/Orbshacker/Orbshacker.csproj -c Release -r win-x64 --self-contained true -o publish
+dotnet publish src/Orbshacker/Orbshacker.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish
 .\publish\orbshacker.exe
 ```
 

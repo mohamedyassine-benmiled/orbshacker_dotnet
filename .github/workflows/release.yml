@@ -25,7 +25,7 @@ jobs:
         shell: pwsh
         run: |
           $version = "${{ github.ref_name }}".TrimStart('v')
-          dotnet publish src/Orbshacker/Orbshacker.csproj --configuration Release -p:Version=$version --output publish
+          dotnet publish src/Orbshacker/Orbshacker.csproj --configuration Release --runtime win-x64 --self-contained true -p:PublishSingleFile=true -p:Version=$version --output publish
       - uses: softprops/action-gh-release@v2.6.1
         if: startsWith(github.ref, 'refs/tags/')
         with:

@@ -8,9 +8,9 @@
     <AssemblyName>orbshacker</AssemblyName>
     <RootNamespace>Orbshacker</RootNamespace>
     <Version>0.0.0</Version>
-    <PublishSingleFile>true</PublishSingleFile>
-    <SelfContained>true</SelfContained>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <!-- Normal build/run output remains framework-dependent. Release publishing
+         explicitly enables the self-contained single-file options in CI. -->
+    <SelfContained>false</SelfContained>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
 </Project>

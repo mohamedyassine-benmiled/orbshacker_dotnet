@@ -42,11 +42,27 @@ public sealed class GameFaker : IDisposable
         if (string.IsNullOrEmpty(assemblyPath)) return; // Published single-file executable.
         var sourceDirectory = Path.GetDirectoryName(assemblyPath)!; var destinationDirectory = Path.GetDirectoryName(targetPath)!;
         var baseName = Path.GetFileNameWithoutExtension(assemblyPath);
-        foreach (var source in new[] { assemblyPath, Path.Combine(sourceDirectory, baseName + ".deps.json"), Path.Combine(sourceDirectory, baseName + ".runtimeconfig.json") })
+        var runtimeConfig = Path.Combine(sourceDirectory, baseName + ".runtimeconfig.json");
+        var sources = IsFrameworkDependent(runtimeConfig)
+            ? new[] { assemblyPath, Path.Combine(sourceDirectory, baseName + ".deps.json"), runtimeConfig }
+            : Directory.EnumerateFiles(sourceDirectory).Where(path => !Path.GetFullPath(path).Equals(Path.GetFullPath(Environment.ProcessPath!), StringComparison.OrdinalIgnoreCase));
+        foreach (var source in sources)
         {
             if (!File.Exists(source)) continue;
             var destination = Path.Combine(destinationDirectory, Path.GetFileName(source)); File.Copy(source, destination, true); RegisterCreatedFile(destination);
         }
+    }
+
+    public static bool IsFrameworkDependent(string runtimeConfigPath)
+    {
+        if (!File.Exists(runtimeConfigPath)) return false;
+        try
+        {
+            using var document = JsonDocument.Parse(File.ReadAllText(runtimeConfigPath));
+            var options = document.RootElement.GetProperty("runtimeOptions");
+            return options.TryGetProperty("framework", out _) || options.TryGetProperty("frameworks", out _);
+        }
+        catch (JsonException) { return false; }
     }
 
     public string CreateFakeGame(string executableName)
