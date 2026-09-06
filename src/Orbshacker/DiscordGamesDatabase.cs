@@ -40,7 +40,7 @@ public sealed class DiscordGamesDatabase(ApiClient api)
     private static List<string> Filter(GameRecord game, bool skipPatterns)
     {
         return (game.Executables ?? []).Where(e => e.Os == "win32").Select(e => e.Name.TrimStart('>'))
-            .Select(PathUtilities.SanitizeRelativePath).Where(n => !skipPatterns || !SkipPatterns.Any(p => n.Contains(p, StringComparison.OrdinalIgnoreCase)))
+            .Select(name => PathUtilities.SanitizeRelativePath(name)).Where(n => !skipPatterns || !SkipPatterns.Any(p => n.Contains(p, StringComparison.OrdinalIgnoreCase)))
             .Distinct(StringComparer.Ordinal).ToList();
     }
 }
